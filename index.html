@@ -455,47 +455,51 @@
     </div>
 
     <!-- Camera Capture Modal -->
-    <div id="cameraModal" class="fixed inset-0 bg-gray-900 bg-opacity-90 hidden items-center justify-center z-[120] backdrop-blur-sm">
-        <div class="bg-white rounded-2xl shadow-2xl max-w-lg w-full overflow-hidden mx-4">
+    <div id="cameraModal" class="fixed inset-0 bg-gray-900 bg-opacity-95 hidden items-center justify-center z-[120] backdrop-blur-sm p-4 md:p-8">
+        <div class="bg-white rounded-3xl shadow-2xl max-w-6xl w-full h-full max-h-[90vh] flex flex-col overflow-hidden mx-auto">
             <!-- Header -->
-            <div class="px-6 py-4 border-b border-gray-200 bg-gray-50 flex justify-between items-center">
+            <div class="px-6 py-4 border-b border-gray-200 bg-gray-50 flex justify-between items-center shrink-0">
                 <div>
-                    <h3 class="text-lg font-bold text-gray-900"><i class="fas fa-camera mr-2 text-formprimary"></i> Capture ID Photo</h3>
-                    <p class="text-xs text-gray-500 font-medium mt-1" id="cameraStudentName">Loading Student...</p>
+                    <h3 class="text-xl font-bold text-gray-900"><i class="fas fa-camera mr-2 text-formprimary"></i> Studio Camera Capture</h3>
+                    <p class="text-sm text-gray-500 font-medium mt-1" id="cameraStudentName">Loading Student...</p>
                 </div>
-                <button onclick="closeCameraModal()" class="text-gray-400 hover:text-red-500 transition"><i class="fas fa-times text-xl"></i></button>
+                <button onclick="closeCameraModal()" class="text-gray-400 hover:text-red-500 transition"><i class="fas fa-times text-2xl"></i></button>
             </div>
             
             <!-- Video/Canvas Container -->
-            <div class="p-6 bg-gray-100 flex flex-col items-center justify-center relative">
+            <div class="flex-1 bg-black flex items-center justify-center relative overflow-hidden">
                 <!-- Video Stream -->
-                <video id="videoElement" autoplay playsinline class="w-full max-w-[400px] h-auto bg-black rounded-lg shadow-inner"></video>
+                <video id="videoElement" autoplay playsinline class="w-auto h-full max-w-full object-contain"></video>
                 
                 <!-- Captured Photo Canvas (Hidden Initially) -->
-                <canvas id="canvasElement" class="w-full max-w-[400px] h-auto bg-black rounded-lg shadow-inner hidden"></canvas>
+                <canvas id="canvasElement" class="w-auto h-full max-w-full object-contain hidden"></canvas>
                 
                 <!-- Overlay Guide for ID Photo -->
-                <div id="cameraGuide" class="absolute inset-0 pointer-events-none flex items-center justify-center opacity-50">
-                    <div class="w-48 h-64 border-2 border-dashed border-white rounded-lg"></div>
+                <div id="cameraGuide" class="absolute inset-0 pointer-events-none flex items-center justify-center z-10 overflow-hidden">
+                    <!-- Standard ID card aspect ratio is 2.125 / 3.375 -->
+                    <div class="w-[50vw] sm:w-[350px] aspect-[2.125/3.375] border-4 border-dashed border-white/80 rounded-2xl shadow-[0_0_0_9999px_rgba(0,0,0,0.6)] flex items-center justify-center">
+                        <!-- Crosshair center -->
+                        <div class="text-white/40 text-4xl font-light">+</div>
+                    </div>
                 </div>
             </div>
 
             <!-- Controls -->
-            <div class="px-6 py-4 border-t border-gray-200 bg-white flex justify-center gap-4">
-                <button type="button" id="mirrorBtn" onclick="toggleMirror()" title="Mirror Camera" class="px-4 py-3 text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-xl font-bold transition shadow-sm items-center flex justify-center">
+            <div class="px-6 py-5 border-t border-gray-200 bg-white flex justify-center gap-4 shrink-0">
+                <button type="button" id="mirrorBtn" onclick="toggleMirror()" title="Mirror Camera" class="px-5 py-4 text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-xl font-bold transition shadow-sm items-center flex justify-center text-lg">
                     <i class="fas fa-arrows-alt-h"></i>
                 </button>
 
-                <button type="button" id="snapBtn" onclick="snapPhoto()" class="px-6 py-3 text-white bg-formprimary hover:bg-formprimarydark rounded-xl font-bold transition shadow-md flex items-center flex-1 justify-center">
-                    <i class="fas fa-camera-retro mr-2"></i> Snap Photo
+                <button type="button" id="snapBtn" onclick="snapPhoto()" class="px-8 py-4 text-white bg-formprimary hover:bg-formprimarydark rounded-xl font-bold transition shadow-md flex items-center flex-1 justify-center text-lg">
+                    <i class="fas fa-camera-retro mr-3"></i> Snap High-Res Photo
                 </button>
                 
-                <button type="button" id="retakeBtn" onclick="retakePhoto()" class="hidden px-5 py-3 text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-xl font-bold transition shadow-sm items-center flex-1 justify-center">
-                    <i class="fas fa-redo mr-2"></i> Retake
+                <button type="button" id="retakeBtn" onclick="retakePhoto()" class="hidden px-6 py-4 text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-xl font-bold transition shadow-sm items-center flex-1 justify-center text-lg">
+                    <i class="fas fa-redo mr-3"></i> Retake Photo
                 </button>
                 
-                <button type="button" id="savePhotoBtn" onclick="savePhotoLocal()" class="hidden px-5 py-3 text-white bg-green-600 hover:bg-green-700 rounded-xl font-bold transition shadow-md items-center flex-1 justify-center">
-                    <i class="fas fa-download mr-2"></i> Save File
+                <button type="button" id="savePhotoBtn" onclick="savePhotoLocal()" class="hidden px-6 py-4 text-white bg-green-600 hover:bg-green-700 rounded-xl font-bold transition shadow-md items-center flex-1 justify-center text-lg">
+                    <i class="fas fa-download mr-3"></i> Download & Save
                 </button>
             </div>
         </div>
