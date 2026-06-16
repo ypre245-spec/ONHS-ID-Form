@@ -1,0 +1,1636 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student ID Information Form | Odiongan National High School</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        formbg: '#f3f4f6',
+                        formprimary: '#4f46e5', // Shifted to a modern indigo
+                        formprimarydark: '#4338ca',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Custom styles for radio buttons */
+        input[type="radio"]:checked + label .radio-inner {
+            background-color: #4f46e5;
+            transform: scale(1);
+        }
+        input[type="radio"]:checked + label .radio-outer {
+            border-color: #4f46e5;
+        }
+        
+        /* Smooth Step Transitions */
+        .step-section {
+            transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
+        }
+        .step-hidden {
+            opacity: 0;
+            transform: translateY(10px);
+            pointer-events: none;
+            position: absolute;
+            visibility: hidden;
+        }
+        .step-active {
+            opacity: 1;
+            transform: translateY(0);
+            position: relative;
+            visibility: visible;
+        }
+
+        /* Printable ID Card Styles */
+        @media print {
+            body.printing-id > *:not(#printableIdContainerWrapper) {
+                display: none !important;
+            }
+            #printableIdContainerWrapper {
+                display: flex !important;
+                flex-direction: row;
+                justify-content: center;
+                align-items: flex-start;
+                gap: 0.5in;
+                padding: 0.5in;
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 100%;
+                background: white;
+            }
+            .id-card-print-target {
+                box-shadow: none !important;
+                border: 1px solid #000 !important;
+                /* Force standard CR80 ID Card dimensions on print */
+                width: 2.125in !important;
+                height: 3.375in !important;
+            }
+            @page {
+                size: auto;
+                margin: 0; 
+            }
+        }
+    </style>
+</head>
+<body class="bg-formbg min-h-screen font-sans text-gray-800 flex flex-col">
+
+    <!-- Navbar -->
+    <nav class="bg-white shadow-sm sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16 items-center">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0 flex items-center gap-2">
+                        <div class="w-8 h-8 bg-formprimary rounded-lg flex items-center justify-center text-white font-bold text-xl shadow-md">
+                            <i class="fas fa-id-card text-sm"></i>
+                        </div>
+                        <span class="font-bold text-lg sm:text-xl text-gray-900 tracking-tight truncate">Odiongan National High School</span>
+                    </div>
+                </div>
+                <div class="hidden sm:ml-6 sm:flex sm:space-x-8">
+                    <a href="#" class="border-formprimary text-gray-900 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">ID Form</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <div class="bg-gradient-to-r from-formprimarydark to-formprimary pb-24 pt-12">
+        <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 text-center text-white">
+            <h1 class="text-3xl md:text-4xl font-bold tracking-tight mb-4">Student ID Information Form</h1>
+            <p class="text-indigo-100 text-sm md:text-base max-w-xl mx-auto">Welcome! Please provide your accurate details below for your official Student ID. Your progress is automatically saved as a draft.</p>
+        </div>
+    </div>
+
+    <!-- Main Content Container -->
+    <main class="flex-grow flex flex-col -mt-16 z-10 px-4 sm:px-6 lg:px-8 mb-12">
+        <div class="max-w-3xl w-full mx-auto">
+            
+            <!-- Form Wrapper -->
+            <form id="registrationForm" action="https://script.google.com/macros/s/AKfycbyi8RHbly_1d6mdeSkvWv2cstc-aibrpGMCBgP6tu9LlRBvhzkrandW9Qd2yKpm0wpJGA/exec" 
+                  method="POST" 
+                  target="hidden_iframe" 
+                  onsubmit="handleFormSubmit(event)"
+                  class="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden">
+                
+                <!-- Progress Stepper Header -->
+                <div class="bg-gray-50 border-b border-gray-200 px-6 py-5">
+                    <div class="flex items-center justify-between relative">
+                        <!-- Connecting Line -->
+                        <div class="absolute left-0 top-1/2 transform -translate-y-1/2 w-full h-1 bg-gray-200 z-0"></div>
+                        <div id="progressLine" class="absolute left-0 top-1/2 transform -translate-y-1/2 w-0 h-1 bg-formprimary z-0 transition-all duration-500"></div>
+
+                        <!-- Step 1 Indicator -->
+                        <div class="relative z-10 flex flex-col items-center">
+                            <div id="stepIcon1" class="w-10 h-10 rounded-full flex items-center justify-center font-bold text-white bg-formprimary ring-4 ring-white shadow-sm transition-colors duration-300">1</div>
+                            <span id="stepText1" class="text-xs font-medium mt-2 text-formprimary">Academic</span>
+                        </div>
+                        
+                        <!-- Step 2 Indicator -->
+                        <div class="relative z-10 flex flex-col items-center">
+                            <div id="stepIcon2" class="w-10 h-10 rounded-full flex items-center justify-center font-bold text-gray-500 bg-gray-200 ring-4 ring-white shadow-sm transition-colors duration-300">2</div>
+                            <span id="stepText2" class="text-xs font-medium mt-2 text-gray-500">Personal</span>
+                        </div>
+
+                        <!-- Step 3 Indicator -->
+                        <div class="relative z-10 flex flex-col items-center">
+                            <div id="stepIcon3" class="w-10 h-10 rounded-full flex items-center justify-center font-bold text-gray-500 bg-gray-200 ring-4 ring-white shadow-sm transition-colors duration-300">3</div>
+                            <span id="stepText3" class="text-xs font-medium mt-2 text-gray-500">Contact</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="p-6 md:p-10">
+                    <p class="text-red-500 text-xs mb-6 font-medium bg-red-50 inline-block px-3 py-1 rounded-full"><i class="fas fa-asterisk mr-1 text-[10px]"></i> Indicates required question</p>
+
+                    <!-- STEP 1: Academic Info -->
+                    <div id="step1" class="step-section step-active">
+                        <h2 class="text-2xl font-bold mb-6 text-gray-900 border-b pb-3">Academic Details</h2>
+                        
+                        <div class="space-y-6">
+                            <div>
+                                <label class="block text-sm font-semibold text-gray-700 mb-2">Grade Level <span class="text-red-500">*</span></label>
+                                <select name="entry.202419510" id="gradeLevel" onchange="handleGradeChange()" required class="w-full md:w-2/3 p-3.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-formprimary focus:border-formprimary outline-none transition bg-white text-gray-700 shadow-sm hover:border-gray-400">
+                                    <option value="" disabled selected>Select your grade level</option>
+                                    <option value="Grade 11">Grade 11</option>
+                                    <option value="Grade 12">Grade 12</option>
+                                </select>
+                            </div>
+
+                            <div id="strandContainer">
+                                <label class="block text-sm font-semibold text-gray-700 mb-2">Strand / Section</label>
+                                <input type="text" name="entry.946668393" placeholder="Please select Grade Level first" disabled class="w-full md:w-2/3 p-3.5 border border-gray-300 rounded-lg outline-none transition bg-gray-100 text-gray-500 shadow-sm cursor-not-allowed">
+                            </div>
+
+                            <div>
+                                <label class="block text-sm font-semibold text-gray-700 mb-2">Learner Reference Number (LRN)</label>
+                                <input type="text" name="entry.1919901381" pattern="\d{12}" maxlength="12" title="LRN must be exactly 12 digits" oninput="this.value = this.value.replace(/[^0-9]/g, '')" placeholder="12-digit LRN" class="w-full md:w-2/3 p-3.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-formprimary focus:border-formprimary outline-none transition shadow-sm hover:border-gray-400">
+                                <p class="text-xs text-gray-500 mt-2 flex items-center"><i class="fas fa-info-circle mr-1.5 text-formprimary"></i> Must be exactly 12 digits.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- STEP 2: Personal Info -->
+                    <div id="step2" class="step-section step-hidden">
+                        <h2 class="text-2xl font-bold mb-6 text-gray-900 border-b pb-3">Personal Information</h2>
+                        
+                        <div class="space-y-6">
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+                                <div>
+                                    <label class="block text-sm font-semibold text-gray-700 mb-2">First Name <span class="text-red-500">*</span></label>
+                                    <input type="text" name="entry.1678737800" required placeholder="e.g. Juan" class="w-full p-3.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-formprimary focus:border-formprimary outline-none transition shadow-sm hover:border-gray-400">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-semibold text-gray-700 mb-2">Middle Name</label>
+                                    <input type="text" name="entry.1656500005" placeholder="e.g. Dela Cruz" class="w-full p-3.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-formprimary focus:border-formprimary outline-none transition shadow-sm hover:border-gray-400">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-semibold text-gray-700 mb-2">Last Name <span class="text-red-500">*</span></label>
+                                    <input type="text" name="entry.1670874528" required placeholder="e.g. Rizal" class="w-full p-3.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-formprimary focus:border-formprimary outline-none transition shadow-sm hover:border-gray-400">
+                                </div>
+                            </div>
+
+                            <div>
+                                <label class="block text-sm font-semibold text-gray-700 mb-2">Date of Birth <span class="text-red-500">*</span></label>
+                                <div class="grid grid-cols-3 gap-4 md:w-2/3">
+                                    <select name="entry.1132819139" required class="w-full p-3.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-formprimary focus:border-formprimary outline-none transition bg-white shadow-sm hover:border-gray-400">
+                                        <option value="" disabled selected>Month</option>
+                                        <option value="January">January</option>
+                                        <option value="February">February</option>
+                                        <option value="March">March</option>
+                                        <option value="April">April</option>
+                                        <option value="May">May</option>
+                                        <option value="June">June</option>
+                                        <option value="July">July</option>
+                                        <option value="August">August</option>
+                                        <option value="September">September</option>
+                                        <option value="October">October</option>
+                                        <option value="November">November</option>
+                                        <option value="December">December</option>
+                                    </select>
+                                    <select name="entry.716829840" required class="w-full p-3.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-formprimary focus:border-formprimary outline-none transition bg-white shadow-sm hover:border-gray-400">
+                                        <option value="" disabled selected>Day</option>
+                                        <script>for(let i=1; i<=31; i++) document.write(`<option value="${i}">${i}</option>`);</script>
+                                    </select>
+                                    <input type="number" name="entry.1974484635" required placeholder="Year" min="1900" max="2026" class="w-full p-3.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-formprimary focus:border-formprimary outline-none transition bg-white shadow-sm hover:border-gray-400">
+                                </div>
+                            </div>
+
+                            <div>
+                                <label class="block text-sm font-semibold text-gray-700 mb-3">Sex <span class="text-red-500">*</span></label>
+                                <div class="flex flex-row space-x-6">
+                                    <div class="flex items-center">
+                                        <input type="radio" id="gender_female" name="entry.142732348" value="Female" required class="hidden">
+                                        <label for="gender_female" class="flex items-center cursor-pointer text-gray-700 font-medium">
+                                            <div class="radio-outer w-6 h-6 border-2 border-gray-300 rounded-full flex items-center justify-center mr-3 transition-colors duration-200 hover:border-formprimary">
+                                                <div class="radio-inner w-3 h-3 rounded-full bg-transparent scale-0 transition-transform duration-200"></div>
+                                            </div>
+                                            Female
+                                        </label>
+                                    </div>
+                                    <div class="flex items-center">
+                                        <input type="radio" id="gender_male" name="entry.142732348" value="Male" required class="hidden">
+                                        <label for="gender_male" class="flex items-center cursor-pointer text-gray-700 font-medium">
+                                            <div class="radio-outer w-6 h-6 border-2 border-gray-300 rounded-full flex items-center justify-center mr-3 transition-colors duration-200 hover:border-formprimary">
+                                                <div class="radio-inner w-3 h-3 rounded-full bg-transparent scale-0 transition-transform duration-200"></div>
+                                            </div>
+                                            Male
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- STEP 3: Address & Contact -->
+                    <div id="step3" class="step-section step-hidden">
+                        <h2 class="text-2xl font-bold mb-6 text-gray-900 border-b pb-3">Address & Emergency Details</h2>
+                        
+                        <div class="space-y-6">
+                            <!-- Municipality -->
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                                <div>
+                                    <label class="block text-sm font-semibold text-gray-700 mb-2">Municipality <span class="text-red-500">*</span></label>
+                                    <select name="municipality_entry_id_here" id="municipality" onchange="handleMunicipalityChange()" required class="w-full p-3.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-formprimary focus:border-formprimary outline-none transition bg-white text-gray-700 shadow-sm hover:border-gray-400">
+                                        <option value="" disabled selected>Select Municipality</option>
+                                        <option value="Alcantara">Alcantara</option>
+                                        <option value="Banton">Banton</option>
+                                        <option value="Cajidiocan">Cajidiocan</option>
+                                        <option value="Calatrava">Calatrava</option>
+                                        <option value="Ferrol">Ferrol</option>
+                                        <option value="Looc">Looc</option>
+                                        <option value="Magdiwang">Magdiwang</option>
+                                        <option value="Odiongan">Odiongan</option>
+                                        <option value="Romblon (Capital)">Romblon (Capital)</option>
+                                        <option value="San Agustin">San Agustin</option>
+                                        <option value="San Andres">San Andres</option>
+                                        <option value="San Fernando">San Fernando</option>
+                                        <option value="San Jose">San Jose</option>
+                                        <option value="Santa Fe">Santa Fe</option>
+                                        <option value="Santa Maria">Santa Maria</option>
+                                    </select>
+                                </div>
+
+                                <div id="barangayContainer">
+                                    <label class="block text-sm font-semibold text-gray-700 mb-2">Barangay</label>
+                                    <input type="text" name="barangay_entry_id_here" placeholder="Select Municipality first" disabled class="w-full p-3.5 border border-gray-300 rounded-lg outline-none transition bg-gray-100 text-gray-500 shadow-sm cursor-not-allowed">
+                                </div>
+                            </div>
+                            
+                            <hr class="border-gray-200 my-8">
+
+                            <h3 class="text-lg font-medium text-gray-800 mb-4">In Case of Emergency</h3>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                                <div>
+                                    <label class="block text-sm font-semibold text-gray-700 mb-2">Name of Parent / Guardian <span class="text-red-500">*</span></label>
+                                    <input type="text" name="emergency_name" required placeholder="Full Name" class="w-full p-3.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-formprimary focus:border-formprimary outline-none transition shadow-sm hover:border-gray-400">
+                                </div>
+
+                                <div>
+                                    <label class="block text-sm font-semibold text-gray-700 mb-2">Contact Number <span class="text-red-500">*</span></label>
+                                    <input type="tel" name="emergency_contact" required pattern="^09\d{9}$" maxlength="11" title="Phone number must start with 09 and be 11 digits long" oninput="this.value = this.value.replace(/[^0-9]/g, '')" placeholder="e.g. 09123456789" class="w-full p-3.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-formprimary focus:border-formprimary outline-none transition shadow-sm hover:border-gray-400">
+                                    <p class="text-xs text-gray-500 mt-2 flex items-center"><i class="fas fa-info-circle mr-1.5 text-formprimary"></i> Must be 11 digits (Starts with 09).</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- Wizard Navigation Footer -->
+                <div class="bg-gray-50 border-t border-gray-200 px-6 py-4 flex items-center justify-between">
+                    <button type="button" id="prevBtn" onclick="changeStep(-1)" class="hidden text-gray-600 hover:text-gray-900 font-medium hover:bg-gray-200 py-2.5 px-5 rounded-lg transition border border-gray-300 bg-white shadow-sm flex items-center">
+                        <i class="fas fa-arrow-left mr-2 text-sm"></i> Back
+                    </button>
+                    <!-- Spacer for flex-between alignment when Prev is hidden -->
+                    <div id="prevSpacer" class="w-[90px]"></div> 
+                    
+                    <div class="flex gap-3">
+                        <button type="button" onclick="clearFormDraft()" class="text-gray-500 hover:text-red-600 font-medium py-2.5 px-4 rounded-lg transition hover:bg-red-50">
+                            Clear Draft
+                        </button>
+                        
+                        <button type="button" id="nextBtn" onclick="changeStep(1)" class="bg-formprimary hover:bg-formprimarydark text-white font-medium py-2.5 px-8 rounded-lg transition duration-200 shadow-md focus:ring-4 focus:ring-indigo-300 outline-none flex items-center">
+                            Next <i class="fas fa-arrow-right ml-2 text-sm"></i>
+                        </button>
+                        
+                        <button type="submit" id="submitBtn" class="hidden bg-green-600 hover:bg-green-700 text-white font-medium py-2.5 px-8 rounded-lg transition duration-200 shadow-md focus:ring-4 focus:ring-green-300 outline-none flex items-center justify-center">
+                            <span id="submitText">Submit Information</span>
+                            <i id="submitSpinner" class="fas fa-circle-notch fa-spin hidden ml-2"></i>
+                        </button>
+                    </div>
+                </div>
+            </form>
+
+            <iframe name="hidden_iframe" id="hidden_iframe" style="display:none;"></iframe>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-white border-t border-gray-200 mt-auto">
+        <div class="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
+            <div class="md:flex md:items-center md:justify-between text-center md:text-left">
+                <div class="flex justify-center md:justify-start space-x-6 md:order-2 text-gray-400">
+                    <a href="#" class="hover:text-gray-500 transition"><span class="sr-only">Facebook</span><i class="fab fa-facebook text-xl"></i></a>
+                    <a href="#" class="hover:text-gray-500 transition"><span class="sr-only">Twitter</span><i class="fab fa-twitter text-xl"></i></a>
+                    <a href="#" class="hover:text-gray-500 transition"><span class="sr-only">Help</span><i class="fas fa-question-circle text-xl"></i></a>
+                </div>
+                <div class="mt-8 md:mt-0 md:order-1">
+                    <p class="text-sm text-gray-500">&copy; 2026 Odiongan National High School. All rights reserved.</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Success Modal -->
+    <div id="successModal" class="fixed inset-0 bg-gray-900 bg-opacity-60 hidden flex items-center justify-center z-50 backdrop-blur-sm transition-opacity">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full p-8 mx-4 transform scale-95 opacity-0 transition-all duration-300" id="modalContent">
+            <div class="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-5 shadow-inner">
+                <i class="fas fa-check text-4xl text-green-500"></i>
+            </div>
+            <h3 class="text-2xl font-bold text-center text-gray-900 mb-2">Information Submitted!</h3>
+            <p class="text-center text-gray-600 mb-8">Your student ID information has been successfully recorded in the system. Please wait for further announcements regarding ID distribution.</p>
+            <button onclick="closeModal()" class="w-full bg-formprimary hover:bg-formprimarydark text-white font-medium py-3 px-4 rounded-xl transition duration-200 shadow-md">
+                Submit Another Form
+            </button>
+        </div>
+    </div>
+
+    <!-- ADMIN DASHBOARD -->
+    <div id="adminDashboard" class="fixed inset-0 bg-gray-100 z-[100] hidden flex-col">
+        <!-- Admin Header -->
+        <div class="bg-white shadow-md px-6 py-4 flex justify-between items-center z-10">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 bg-gray-900 rounded-lg flex items-center justify-center text-white font-bold text-xl">
+                    <i class="fas fa-user-shield text-sm"></i>
+                </div>
+                <div>
+                    <h2 class="font-bold text-xl text-gray-900 leading-tight">Admin Dashboard</h2>
+                    <p class="text-xs text-gray-500">Student Database Management</p>
+                </div>
+            </div>
+            <div class="flex gap-3">
+                <button onclick="fetchAdminData()" class="bg-white border border-gray-300 text-gray-700 hover:bg-gray-50 font-medium py-2 px-4 rounded-lg transition shadow-sm flex items-center">
+                    <i class="fas fa-sync-alt mr-2" id="adminRefreshIcon"></i> Refresh
+                </button>
+                <button onclick="toggleAdminDashboard()" class="bg-red-50 text-red-600 hover:bg-red-100 font-medium py-2 px-4 rounded-lg transition">
+                    <i class="fas fa-times mr-2"></i> Close
+                </button>
+            </div>
+        </div>
+
+        <!-- Admin Content -->
+        <div class="flex-1 overflow-hidden flex flex-col p-6">
+            <div class="bg-white rounded-2xl shadow-sm border border-gray-200 flex-1 flex flex-col overflow-hidden">
+                
+                <!-- Toolbar -->
+                <div class="p-4 border-b border-gray-200 bg-gray-50 flex justify-between items-center">
+                    <div class="relative w-full max-w-md">
+                        <i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                        <input type="text" id="adminSearchInput" onkeyup="filterAdminTable()" placeholder="Search by name, LRN, grade..." class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-formprimary focus:border-formprimary outline-none transition shadow-sm">
+                    </div>
+                    <div class="text-sm text-gray-500 font-medium ml-4">
+                        Total Records: <span id="adminTotalCount">0</span>
+                    </div>
+                </div>
+
+                <!-- Table Container -->
+                <div class="flex-1 overflow-auto relative">
+                    <div id="adminLoading" class="absolute inset-0 bg-white bg-opacity-80 flex flex-col items-center justify-center z-10">
+                        <i class="fas fa-circle-notch fa-spin text-4xl text-formprimary mb-4"></i>
+                        <p class="text-gray-600 font-medium">Fetching database records...</p>
+                    </div>
+
+                    <table class="min-w-full divide-y divide-gray-200">
+                        <thead class="bg-gray-50 sticky top-0 shadow-sm z-0" id="adminTableHead">
+                            <!-- Dynamic Headers -->
+                        </thead>
+                        <tbody class="bg-white divide-y divide-gray-200" id="adminTableBody">
+                            <!-- Dynamic Rows -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Admin Edit Modal -->
+    <div id="adminEditModal" class="fixed inset-0 bg-gray-900 bg-opacity-60 hidden flex items-center justify-center z-[110] backdrop-blur-sm">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-2xl w-full p-0 mx-4 flex flex-col max-h-[90vh]">
+            <div class="px-6 py-4 border-b border-gray-200 bg-gray-50 rounded-t-2xl flex justify-between items-center">
+                <h3 class="text-lg font-bold text-gray-900"><i class="fas fa-edit mr-2 text-formprimary"></i> Edit Record</h3>
+                <button onclick="closeAdminEditModal()" class="text-gray-400 hover:text-red-500 transition"><i class="fas fa-times text-xl"></i></button>
+            </div>
+            
+            <div class="p-6 overflow-y-auto flex-1">
+                <!-- SWAPPED to use Native Form Submission via hidden iframe -->
+                <form id="adminEditForm" 
+                      action="https://script.google.com/macros/s/AKfycbyi8RHbly_1d6mdeSkvWv2cstc-aibrpGMCBgP6tu9LlRBvhzkrandW9Qd2yKpm0wpJGA/exec" 
+                      method="POST" 
+                      target="hidden_iframe" 
+                      onsubmit="return handleAdminSubmit()" 
+                      class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <!-- Dynamic Inputs will be injected here -->
+                </form>
+            </div>
+
+            <div class="px-6 py-4 border-t border-gray-200 bg-gray-50 rounded-b-2xl flex justify-end gap-3">
+                <button type="button" onclick="closeAdminEditModal()" class="px-5 py-2.5 text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 font-medium transition">Cancel</button>
+                <button type="submit" form="adminEditForm" id="adminSaveBtn" class="px-5 py-2.5 text-white bg-formprimary hover:bg-formprimarydark rounded-lg font-medium transition shadow-md flex items-center">
+                    <span id="adminSaveText">Save Changes</span>
+                    <i id="adminSaveSpinner" class="fas fa-circle-notch fa-spin hidden ml-2"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Camera Capture Modal -->
+    <div id="cameraModal" class="fixed inset-0 bg-gray-900 bg-opacity-90 hidden items-center justify-center z-[120] backdrop-blur-sm">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-lg w-full overflow-hidden mx-4">
+            <!-- Header -->
+            <div class="px-6 py-4 border-b border-gray-200 bg-gray-50 flex justify-between items-center">
+                <div>
+                    <h3 class="text-lg font-bold text-gray-900"><i class="fas fa-camera mr-2 text-formprimary"></i> Capture ID Photo</h3>
+                    <p class="text-xs text-gray-500 font-medium mt-1" id="cameraStudentName">Loading Student...</p>
+                </div>
+                <button onclick="closeCameraModal()" class="text-gray-400 hover:text-red-500 transition"><i class="fas fa-times text-xl"></i></button>
+            </div>
+            
+            <!-- Video/Canvas Container -->
+            <div class="p-6 bg-gray-100 flex flex-col items-center justify-center relative">
+                <!-- Video Stream -->
+                <video id="videoElement" autoplay playsinline class="w-full max-w-[400px] h-auto bg-black rounded-lg shadow-inner"></video>
+                
+                <!-- Captured Photo Canvas (Hidden Initially) -->
+                <canvas id="canvasElement" class="w-full max-w-[400px] h-auto bg-black rounded-lg shadow-inner hidden"></canvas>
+                
+                <!-- Overlay Guide for ID Photo -->
+                <div id="cameraGuide" class="absolute inset-0 pointer-events-none flex items-center justify-center opacity-50">
+                    <div class="w-48 h-64 border-2 border-dashed border-white rounded-lg"></div>
+                </div>
+            </div>
+
+            <!-- Controls -->
+            <div class="px-6 py-4 border-t border-gray-200 bg-white flex justify-center gap-4">
+                <button type="button" id="mirrorBtn" onclick="toggleMirror()" title="Mirror Camera" class="px-4 py-3 text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-xl font-bold transition shadow-sm items-center flex justify-center">
+                    <i class="fas fa-arrows-alt-h"></i>
+                </button>
+
+                <button type="button" id="snapBtn" onclick="snapPhoto()" class="px-6 py-3 text-white bg-formprimary hover:bg-formprimarydark rounded-xl font-bold transition shadow-md flex items-center flex-1 justify-center">
+                    <i class="fas fa-camera-retro mr-2"></i> Snap Photo
+                </button>
+                
+                <button type="button" id="retakeBtn" onclick="retakePhoto()" class="hidden px-5 py-3 text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-xl font-bold transition shadow-sm items-center flex-1 justify-center">
+                    <i class="fas fa-redo mr-2"></i> Retake
+                </button>
+                
+                <button type="button" id="savePhotoBtn" onclick="savePhotoLocal()" class="hidden px-5 py-3 text-white bg-green-600 hover:bg-green-700 rounded-xl font-bold transition shadow-md items-center flex-1 justify-center">
+                    <i class="fas fa-download mr-2"></i> Save File
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ID Generator Modal -->
+    <div id="idGeneratorModal" class="fixed inset-0 bg-gray-900 bg-opacity-90 hidden items-center justify-center z-[130] backdrop-blur-sm overflow-y-auto pt-10 pb-10">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-4xl w-full mx-4 flex flex-col relative no-print">
+            <!-- Header -->
+            <div class="px-6 py-4 border-b border-gray-200 bg-gray-50 flex justify-between items-center rounded-t-2xl">
+                <div>
+                    <h3 class="text-lg font-bold text-gray-900"><i class="fas fa-id-badge mr-2 text-formprimary"></i> Generate ID Card</h3>
+                    <p class="text-xs text-gray-500 font-medium mt-1" id="generatorStudentName">Loading Student...</p>
+                </div>
+                <button onclick="closeIdModal()" class="text-gray-400 hover:text-red-500 transition"><i class="fas fa-times text-xl"></i></button>
+            </div>
+            
+            <!-- Body -->
+            <div class="p-6">
+                <!-- Upload Photo -->
+                <div class="mb-6 max-w-sm mx-auto text-center bg-indigo-50 p-4 rounded-xl border border-indigo-100">
+                    <label class="block text-sm font-bold text-indigo-900 mb-2">Attach Saved ID Photo</label>
+                    <input type="file" id="idPhotoInput" accept="image/*" class="w-full text-sm text-gray-600 file:mr-4 file:py-2.5 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-white file:text-indigo-700 hover:file:bg-gray-50 transition cursor-pointer">
+                    <p class="text-xs text-indigo-500 mt-2">Select the JPG photo you previously captured.</p>
+                </div>
+
+                <!-- Live Preview of ID -->
+                <div id="idPreviewContainer" class="flex flex-wrap justify-center gap-8 bg-gray-100 p-8 rounded-xl border border-gray-200 shadow-inner">
+                    <!-- ID elements will be injected here via JS -->
+                </div>
+            </div>
+
+            <!-- Controls -->
+            <div class="px-6 py-4 border-t border-gray-200 bg-gray-50 flex justify-end gap-3 rounded-b-2xl">
+                <button type="button" onclick="closeIdModal()" class="px-5 py-2.5 text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 font-medium transition">Close</button>
+                <button type="button" onclick="printIdCard()" class="px-6 py-2.5 text-white bg-blue-600 hover:bg-blue-700 rounded-lg font-bold transition shadow-md flex items-center">
+                    <i class="fas fa-print mr-2"></i> Print ID Card
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Hidden Printable ID Wrapper (Visible Only During Printing) -->
+    <div id="printableIdContainerWrapper" class="hidden"></div>
+
+
+    <script>
+        // ==========================================
+        //         AUTO-CAPITALIZATION LOGIC
+        // ==========================================
+        document.addEventListener('input', function(e) {
+            if (e.target.tagName === 'INPUT' && e.target.type === 'text') {
+                // Exclude LRN (12 digits) from capitalization formatting
+                if (e.target.name === 'entry.1919901381') return;
+                
+                let start = e.target.selectionStart;
+                let end = e.target.selectionEnd;
+                let val = e.target.value;
+                
+                // Matches the first letter of the string, or the first letter after a space or hyphen
+                let newVal = val.replace(/(^\w)|([\s\-]\w)/g, letter => letter.toUpperCase());
+                
+                if (val !== newVal) {
+                    e.target.value = newVal;
+                    // Restore cursor to avoid jumping to the end of the input field
+                    try {
+                        e.target.setSelectionRange(start, end);
+                    } catch(err) {} 
+                }
+            }
+        });
+
+        // ==========================================
+        //         GENERAL SCRIPT LOGIC
+        // ==========================================
+        let submitted = false;
+        let adminSubmitted = false;
+        let currentStep = 1;
+        const totalSteps = 3;
+
+        // --- Wizard Logic ---
+        function updateWizardUI() {
+            // Update visibility of steps
+            for (let i = 1; i <= totalSteps; i++) {
+                const stepDiv = document.getElementById(`step${i}`);
+                if (i === currentStep) {
+                    stepDiv.classList.remove('step-hidden');
+                    stepDiv.classList.add('step-active');
+                } else {
+                    stepDiv.classList.remove('step-active');
+                    stepDiv.classList.add('step-hidden');
+                }
+            }
+
+            // Update Progress Bar
+            const progressLine = document.getElementById('progressLine');
+            if(currentStep === 1) progressLine.style.width = '0%';
+            if(currentStep === 2) progressLine.style.width = '50%';
+            if(currentStep === 3) progressLine.style.width = '100%';
+
+            // Update Step Icons
+            for(let i=1; i<=totalSteps; i++) {
+                const icon = document.getElementById(`stepIcon${i}`);
+                const text = document.getElementById(`stepText${i}`);
+                if(i < currentStep) {
+                    // Completed Step
+                    icon.className = 'w-10 h-10 rounded-full flex items-center justify-center font-bold text-white bg-green-500 ring-4 ring-white shadow-sm transition-colors duration-300';
+                    icon.innerHTML = '<i class="fas fa-check"></i>';
+                    text.className = 'text-xs font-medium mt-2 text-green-600';
+                } else if (i === currentStep) {
+                    // Active Step
+                    icon.className = 'w-10 h-10 rounded-full flex items-center justify-center font-bold text-white bg-formprimary ring-4 ring-white shadow-sm transition-colors duration-300';
+                    icon.innerHTML = i;
+                    text.className = 'text-xs font-bold mt-2 text-formprimary';
+                } else {
+                    // Future Step
+                    icon.className = 'w-10 h-10 rounded-full flex items-center justify-center font-bold text-gray-500 bg-gray-200 ring-4 ring-white shadow-sm transition-colors duration-300';
+                    icon.innerHTML = i;
+                    text.className = 'text-xs font-medium mt-2 text-gray-500';
+                }
+            }
+
+            // Update Buttons
+            const prevBtn = document.getElementById('prevBtn');
+            const prevSpacer = document.getElementById('prevSpacer');
+            const nextBtn = document.getElementById('nextBtn');
+            const submitBtn = document.getElementById('submitBtn');
+
+            if (currentStep === 1) {
+                prevBtn.classList.add('hidden');
+                prevSpacer.classList.remove('hidden');
+            } else {
+                prevBtn.classList.remove('hidden');
+                prevSpacer.classList.add('hidden');
+            }
+
+            if (currentStep === totalSteps) {
+                nextBtn.classList.add('hidden');
+                submitBtn.classList.remove('hidden');
+            } else {
+                nextBtn.classList.remove('hidden');
+                submitBtn.classList.add('hidden');
+            }
+        }
+
+        function validateCurrentStep() {
+            const stepDiv = document.getElementById(`step${currentStep}`);
+            const inputs = stepDiv.querySelectorAll('input, select');
+            for (let input of inputs) {
+                if (!input.checkValidity()) {
+                    input.reportValidity(); // This triggers the browser's native tooltips
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        function changeStep(direction) {
+            if (direction === 1 && !validateCurrentStep()) {
+                return; // Prevent moving forward if invalid
+            }
+            
+            currentStep += direction;
+            if (currentStep < 1) currentStep = 1;
+            if (currentStep > totalSteps) currentStep = totalSteps;
+            
+            updateWizardUI();
+            
+            // Scroll to top of form wrapper smoothly
+            const formTop = document.getElementById('registrationForm').getBoundingClientRect().top + window.scrollY - 100;
+            window.scrollTo({ top: formTop, behavior: 'smooth' });
+        }
+
+        // --- Auto-Save Draft Logic ---
+        document.addEventListener("DOMContentLoaded", () => {
+            const form = document.querySelector('form');
+            
+            // Initial UI Setup
+            updateWizardUI();
+
+            // Load saved data
+            const savedData = JSON.parse(localStorage.getItem('studentFormDraft'));
+            if (savedData) {
+                const inputs = form.querySelectorAll('input, select');
+                inputs.forEach(input => {
+                    if (savedData[input.name]) {
+                        if (input.type === 'radio') {
+                            if (input.value === savedData[input.name]) input.checked = true;
+                        } else {
+                            input.value = savedData[input.name];
+                        }
+                    }
+                });
+                
+                // Restore dynamically generated dropdowns
+                if (savedData['entry.202419510']) {
+                    handleGradeChange();
+                    setTimeout(() => {
+                        const strandSelect = document.querySelector('[name="entry.946668393"]');
+                        if (strandSelect && savedData['entry.946668393']) strandSelect.value = savedData['entry.946668393'];
+                    }, 50); 
+                }
+                
+                if (savedData['municipality_entry_id_here']) {
+                    handleMunicipalityChange();
+                    setTimeout(() => {
+                        const brgyInput = document.querySelector('[name="barangay_entry_id_here"]');
+                        if (brgyInput && savedData['barangay_entry_id_here']) brgyInput.value = savedData['barangay_entry_id_here'];
+                    }, 50);
+                }
+            }
+
+            // Save data on change
+            form.addEventListener('input', () => {
+                const formData = new FormData(form);
+                const dataObj = Object.fromEntries(formData.entries());
+                localStorage.setItem('studentFormDraft', JSON.stringify(dataObj));
+            });
+        });
+
+        function clearFormDraft() {
+            if(confirm("Are you sure you want to clear your draft? All unsaved inputs will be lost.")) {
+                localStorage.removeItem('studentFormDraft');
+                document.querySelector('form').reset();
+                handleGradeChange();
+                handleMunicipalityChange();
+                currentStep = 1;
+                updateWizardUI();
+            }
+        }
+
+        // --- Submission Logic ---
+        document.getElementById('hidden_iframe').onload = function() {
+            if (submitted) showSuccess();
+            if (adminSubmitted) handleAdminSuccess();
+        };
+
+        function handleFormSubmit(event) {
+            showLoadingState();
+        }
+
+        function showLoadingState() {
+            submitted = true;
+            const btn = document.getElementById('submitBtn');
+            const text = document.getElementById('submitText');
+            const spinner = document.getElementById('submitSpinner');
+            
+            btn.disabled = true;
+            btn.classList.add('opacity-75', 'cursor-not-allowed');
+            text.innerText = 'Submitting...';
+            spinner.classList.remove('hidden');
+        }
+
+        function showSuccess() {
+            if (submitted) {
+                localStorage.removeItem('studentFormDraft');
+
+                const btn = document.getElementById('submitBtn');
+                const text = document.getElementById('submitText');
+                const spinner = document.getElementById('submitSpinner');
+                
+                btn.disabled = false;
+                btn.classList.remove('opacity-75', 'cursor-not-allowed');
+                text.innerText = 'Submit Information';
+                spinner.classList.add('hidden');
+
+                const modal = document.getElementById('successModal');
+                const modalContent = document.getElementById('modalContent');
+                
+                modal.classList.remove('hidden');
+                void modal.offsetWidth;
+                
+                modalContent.classList.remove('scale-95', 'opacity-0');
+                modalContent.classList.add('scale-100', 'opacity-100');
+                
+                document.querySelector('form').reset();
+                submitted = false;
+                
+                handleGradeChange();
+                handleMunicipalityChange();
+                currentStep = 1;
+                updateWizardUI();
+            }
+        }
+
+        function closeModal() {
+            const modal = document.getElementById('successModal');
+            const modalContent = document.getElementById('modalContent');
+            
+            modalContent.classList.remove('scale-100', 'opacity-100');
+            modalContent.classList.add('scale-95', 'opacity-0');
+            
+            setTimeout(() => {
+                modal.classList.add('hidden');
+            }, 300);
+        }
+
+        // ==========================================
+        //         ADMIN DASHBOARD LOGIC
+        // ==========================================
+        let adminDataCache = [];
+
+        // Listen for F12 to open Admin Dashboard
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'F12') {
+                event.preventDefault(); // Attempt to block dev tools
+                toggleAdminDashboard();
+            }
+        });
+
+        function toggleAdminDashboard() {
+            const dashboard = document.getElementById('adminDashboard');
+            if (dashboard.classList.contains('hidden')) {
+                dashboard.classList.remove('hidden');
+                dashboard.classList.add('flex');
+                fetchAdminData(); // Auto fetch on open
+            } else {
+                dashboard.classList.add('hidden');
+                dashboard.classList.remove('flex');
+            }
+        }
+
+        async function fetchAdminData() {
+            const SCRIPT_URL = document.getElementById('registrationForm').action;
+            const loading = document.getElementById('adminLoading');
+            const refreshIcon = document.getElementById('adminRefreshIcon');
+            
+            loading.classList.remove('hidden');
+            refreshIcon.classList.add('fa-spin');
+
+            try {
+                // GET request triggers doGet() in Apps Script
+                const response = await fetch(SCRIPT_URL);
+                const data = await response.json();
+                
+                adminDataCache = data; // store locally for search/edit
+                renderAdminTable(data);
+                
+            } catch (error) {
+                console.error("Error fetching data:", error);
+                alert("Failed to fetch database records. Check your internet or Web App URL permissions.");
+            } finally {
+                loading.classList.add('hidden');
+                refreshIcon.classList.remove('fa-spin');
+            }
+        }
+
+        function renderAdminTable(data) {
+            const tbody = document.getElementById('adminTableBody');
+            const thead = document.getElementById('adminTableHead');
+            
+            document.getElementById('adminTotalCount').innerText = data.length;
+
+            if (data.length === 0) {
+                thead.innerHTML = '';
+                tbody.innerHTML = '<tr><td class="px-6 py-8 text-center text-gray-500 font-medium"><i class="fas fa-folder-open text-3xl mb-3 block text-gray-300"></i> No records found in the database.</td></tr>';
+                return;
+            }
+
+            // Generate Headers Dynamically from Sheet Columns
+            const headers = Object.keys(data[0]).filter(k => k !== '_rowIndex');
+            let trHead = '<tr>';
+            headers.forEach(h => {
+                trHead += `<th class="px-6 py-4 text-left text-xs font-bold text-gray-600 uppercase tracking-wider whitespace-nowrap">${h}</th>`;
+            });
+            trHead += `<th class="px-6 py-4 text-right text-xs font-bold text-gray-600 uppercase tracking-wider sticky right-0 bg-gray-50">Actions</th></tr>`;
+            thead.innerHTML = trHead;
+
+            // Generate Rows
+            let trBody = '';
+            data.forEach(row => {
+                trBody += `<tr class="hover:bg-indigo-50/50 transition">`;
+                headers.forEach(h => {
+                    trBody += `<td class="px-6 py-3 whitespace-nowrap text-sm text-gray-800">${row[h] || '-'}</td>`;
+                });
+                trBody += `<td class="px-6 py-3 whitespace-nowrap text-right text-sm font-medium sticky right-0 bg-white shadow-[-5px_0_5px_-5px_rgba(0,0,0,0.1)] group-hover:bg-indigo-50/50">
+                    <button onclick="openAdminEditModal(${row._rowIndex})" class="text-formprimary hover:text-formprimarydark bg-indigo-50 hover:bg-indigo-100 px-3 py-1.5 rounded-lg transition inline-flex items-center">
+                        <i class="fas fa-edit mr-1.5"></i> Edit
+                    </button>
+                    <button onclick="openCameraModal(${row._rowIndex})" title="Capture ID Photo" class="text-green-600 hover:text-green-700 bg-green-50 hover:bg-green-100 px-3 py-1.5 rounded-lg transition inline-flex items-center ml-2">
+                        <i class="fas fa-camera"></i>
+                    </button>
+                    <button onclick="openIdModal(${row._rowIndex})" title="Generate ID Card" class="text-blue-600 hover:text-blue-700 bg-blue-50 hover:bg-blue-100 px-3 py-1.5 rounded-lg transition inline-flex items-center ml-2">
+                        <i class="fas fa-id-badge"></i>
+                    </button>
+                </td></tr>`;
+            });
+            tbody.innerHTML = trBody;
+        }
+
+        function filterAdminTable() {
+            const query = document.getElementById('adminSearchInput').value.toLowerCase();
+            const filtered = adminDataCache.filter(row => {
+                // Search across all properties in the row
+                return Object.values(row).some(val => 
+                    String(val).toLowerCase().includes(query)
+                );
+            });
+            renderAdminTable(filtered);
+        }
+
+        function openAdminEditModal(rowIndex) {
+            const rowData = adminDataCache.find(r => r._rowIndex === rowIndex);
+            if (!rowData) return;
+
+            const form = document.getElementById('adminEditForm');
+            form.innerHTML = ''; // clear old inputs
+            
+            // Hidden input to store rowIndex
+            form.innerHTML += `<input type="hidden" name="rowIndex" value="${rowData._rowIndex}">`;
+            form.innerHTML += `<input type="hidden" name="action" value="update">`;
+
+            // Dynamically create inputs based on Sheet Headers
+            Object.keys(rowData).forEach(key => {
+                if (key === '_rowIndex') return;
+                
+                const val = rowData[key];
+                const isTimestamp = key.toLowerCase().includes('timestamp');
+                
+                let inputHTML = `
+                <div class="mb-2 ${isTimestamp ? 'col-span-1 md:col-span-2' : ''}">
+                    <label class="block text-xs font-bold text-gray-700 mb-1 uppercase tracking-wide">${key}</label>
+                `;
+
+                if (isTimestamp) {
+                    // Send timestamp back secretly, show as disabled text
+                    inputHTML += `
+                        <input type="hidden" name="origTimestamp" value="${val}">
+                        <input type="text" disabled value="${val}" class="w-full p-2.5 border border-gray-200 rounded-lg bg-gray-100 text-gray-500 text-sm">
+                    `;
+                } else {
+                    inputHTML += `<input type="text" name="${key}" value="${val}" class="w-full p-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-formprimary focus:border-formprimary outline-none transition text-sm">`;
+                }
+                
+                inputHTML += `</div>`;
+                form.innerHTML += inputHTML;
+            });
+
+            document.getElementById('adminEditModal').classList.remove('hidden');
+        }
+
+        function closeAdminEditModal() {
+            document.getElementById('adminEditModal').classList.add('hidden');
+        }
+
+        function handleAdminSubmit() {
+            adminSubmitted = true;
+            
+            const btn = document.getElementById('adminSaveBtn');
+            const text = document.getElementById('adminSaveText');
+            const spinner = document.getElementById('adminSaveSpinner');
+            
+            btn.disabled = true;
+            btn.classList.add('opacity-75', 'cursor-not-allowed');
+            text.innerText = 'Saving...';
+            spinner.classList.remove('hidden');
+            
+            return true; // Allows the browser to send data natively to the hidden_iframe
+        }
+
+        function handleAdminSuccess() {
+            adminSubmitted = false;
+            
+            // Close modal and refresh the table to show updated Google Sheet data
+            closeAdminEditModal();
+            fetchAdminData();
+            
+            // Reset button state
+            const btn = document.getElementById('adminSaveBtn');
+            const text = document.getElementById('adminSaveText');
+            const spinner = document.getElementById('adminSaveSpinner');
+            
+            btn.disabled = false;
+            btn.classList.remove('opacity-75', 'cursor-not-allowed');
+            text.innerText = 'Save Changes';
+            spinner.classList.add('hidden');
+        }
+
+        // ==========================================
+        //         CAMERA CAPTURE LOGIC
+        // ==========================================
+        let currentStream = null;
+        let currentStudentForPhoto = null;
+        let isMirrored = false;
+
+        function toggleMirror() {
+            isMirrored = !isMirrored;
+            const video = document.getElementById('videoElement');
+            if (isMirrored) {
+                video.style.transform = 'scaleX(-1)';
+            } else {
+                video.style.transform = 'scaleX(1)';
+            }
+        }
+
+        async function openCameraModal(rowIndex) {
+            // Find student details
+            currentStudentForPhoto = adminDataCache.find(r => r._rowIndex === rowIndex);
+            if (!currentStudentForPhoto) return;
+
+            // Generate Display Name
+            const firstName = currentStudentForPhoto['First Name'] || '';
+            const lastName = currentStudentForPhoto['Last Name'] || '';
+            const lrn = currentStudentForPhoto['LRN'] || 'No LRN';
+            document.getElementById('cameraStudentName').innerText = `${lastName}, ${firstName} (LRN: ${lrn})`;
+
+            // Setup UI
+            const modal = document.getElementById('cameraModal');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+            
+            // Reset mirror state
+            isMirrored = false;
+            document.getElementById('videoElement').style.transform = 'scaleX(1)';
+            
+            document.getElementById('videoElement').classList.remove('hidden');
+            document.getElementById('canvasElement').classList.add('hidden');
+            document.getElementById('cameraGuide').classList.remove('hidden');
+            
+            document.getElementById('mirrorBtn').classList.remove('hidden');
+            document.getElementById('snapBtn').classList.remove('hidden');
+            document.getElementById('savePhotoBtn').classList.add('hidden');
+            document.getElementById('savePhotoBtn').classList.remove('flex');
+            document.getElementById('retakeBtn').classList.add('hidden');
+            document.getElementById('retakeBtn').classList.remove('flex');
+
+            // Request Camera Access
+            try {
+                currentStream = await navigator.mediaDevices.getUserMedia({ 
+                    video: { 
+                        facingMode: "user", // uses front cam or standard webcam
+                        width: { ideal: 3840 }, // Request maximum possible width
+                        height: { ideal: 2160 } // Request maximum possible height
+                    } 
+                });
+                document.getElementById('videoElement').srcObject = currentStream;
+            } catch (err) {
+                console.error("Camera error:", err);
+                alert("Cannot access the camera. Please ensure permissions are granted in your browser.");
+                closeCameraModal();
+            }
+        }
+
+        function stopCamera() {
+            if (currentStream) {
+                currentStream.getTracks().forEach(track => track.stop());
+                currentStream = null;
+            }
+        }
+
+        function closeCameraModal() {
+            stopCamera();
+            const modal = document.getElementById('cameraModal');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        }
+
+        function snapPhoto() {
+            const video = document.getElementById('videoElement');
+            const canvas = document.getElementById('canvasElement');
+            
+            // Set canvas size matching video native resolution
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            
+            // Draw current frame to canvas
+            const ctx = canvas.getContext('2d');
+            
+            // Apply horizontal flip to the saved image if mirrored
+            if (isMirrored) {
+                ctx.translate(canvas.width, 0);
+                ctx.scale(-1, 1);
+            }
+            
+            ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+            
+            // Reset context transform 
+            if (isMirrored) {
+                ctx.setTransform(1, 0, 0, 1, 0, 0); 
+            }
+            
+            // Swap visibility
+            video.classList.add('hidden');
+            canvas.classList.remove('hidden');
+            document.getElementById('cameraGuide').classList.add('hidden');
+            
+            // Update Buttons
+            document.getElementById('mirrorBtn').classList.add('hidden');
+            document.getElementById('snapBtn').classList.add('hidden');
+            document.getElementById('savePhotoBtn').classList.remove('hidden');
+            document.getElementById('savePhotoBtn').classList.add('flex');
+            document.getElementById('retakeBtn').classList.remove('hidden');
+            document.getElementById('retakeBtn').classList.add('flex');
+        }
+
+        function retakePhoto() {
+            document.getElementById('videoElement').classList.remove('hidden');
+            document.getElementById('canvasElement').classList.add('hidden');
+            document.getElementById('cameraGuide').classList.remove('hidden');
+            
+            document.getElementById('mirrorBtn').classList.remove('hidden');
+            document.getElementById('snapBtn').classList.remove('hidden');
+            document.getElementById('savePhotoBtn').classList.add('hidden');
+            document.getElementById('savePhotoBtn').classList.remove('flex');
+            document.getElementById('retakeBtn').classList.add('hidden');
+            document.getElementById('retakeBtn').classList.remove('flex');
+        }
+
+        function savePhotoLocal() {
+            const canvas = document.getElementById('canvasElement');
+            // Convert image to high-quality JPG data (1.0 represents maximum quality)
+            const dataURL = canvas.toDataURL('image/jpeg', 1.0); 
+            
+            // Clean up names for safe file saving
+            const lastName = (currentStudentForPhoto['Last Name'] || 'Unknown').replace(/[^a-z0-9]/gi, '_');
+            const firstName = (currentStudentForPhoto['First Name'] || '').replace(/[^a-z0-9]/gi, '_');
+            const lrn = (currentStudentForPhoto['LRN'] || '000000000000').replace(/[^a-z0-9]/gi, '_');
+            
+            // e.g. Rizal_Juan_123456789012.jpg
+            const fileName = `${lastName}_${firstName}_${lrn}.jpg`.replace(/_+/g, '_'); 
+            
+            // Create a fake link to trigger the download
+            const a = document.createElement('a');
+            a.href = dataURL;
+            a.download = fileName;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            
+            // Optional: Show a tiny success alert or just close
+            setTimeout(() => {
+                closeCameraModal();
+            }, 300);
+        }
+
+        // ==========================================
+        //       PRINTABLE ID GENERATOR LOGIC
+        // ==========================================
+        let currentStudentForId = null;
+        let currentIdPhotoSrc = '';
+
+        function openIdModal(rowIndex) {
+            currentStudentForId = adminDataCache.find(r => r._rowIndex === rowIndex);
+            if (!currentStudentForId) return;
+            
+            // Generate Display Name
+            const firstName = currentStudentForId['First Name'] || '';
+            const lastName = currentStudentForId['Last Name'] || '';
+            document.getElementById('generatorStudentName').innerText = `${lastName}, ${firstName}`;
+            
+            // Reset photo
+            currentIdPhotoSrc = ''; 
+            document.getElementById('idPhotoInput').value = ''; 
+            
+            updateIdPreview();
+            
+            const modal = document.getElementById('idGeneratorModal');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        }
+
+        function closeIdModal() {
+            const modal = document.getElementById('idGeneratorModal');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        }
+
+        // HTML Template for ID Card Front and Back
+        function generateIdHTML(data, photoSrc) {
+            const midInitial = data['Middle Name'] ? `${data['Middle Name'].charAt(0)}.` : '';
+            const fullNameFront = `${data['First Name']} ${midInitial}`.trim();
+            
+            return `
+            <!-- ID FRONT -->
+            <div class="id-card-print-target flex flex-col bg-white overflow-hidden text-gray-800" style="width: 2.125in; height: 3.375in; border: 1px solid #ccc; border-radius: 8px; position: relative; font-family: 'Inter', sans-serif;">
+                <div class="bg-indigo-700 text-white text-center py-2 px-1">
+                    <h1 class="text-[10px] font-bold leading-tight uppercase">Odiongan National</h1>
+                    <h2 class="text-[9px] leading-tight">High School</h2>
+                </div>
+                <div class="flex-1 flex flex-col items-center pt-4 px-2 text-center">
+                    <div class="w-[1in] h-[1in] bg-gray-200 border-2 border-indigo-700 rounded-md overflow-hidden mb-2 flex items-center justify-center">
+                        ${photoSrc 
+                            ? `<img src="${photoSrc}" class="w-full h-full object-cover">` 
+                            : `<i class="fas fa-user text-3xl text-gray-400"></i>`}
+                    </div>
+                    <h2 class="text-[14px] font-bold leading-tight uppercase text-indigo-900 w-full truncate">${data['Last Name'] || ''}</h2>
+                    <h3 class="text-[11px] font-semibold leading-tight text-gray-800 w-full truncate">${fullNameFront}</h3>
+                    
+                    <div class="mt-3 w-full">
+                        <p class="text-[8px] text-gray-500 uppercase tracking-widest mb-[1px]">LRN</p>
+                        <p class="text-[11px] font-mono font-bold bg-gray-100 py-[2px] rounded">${data['LRN'] || 'N/A'}</p>
+                    </div>
+                    
+                    <div class="mt-2 w-full">
+                        <p class="text-[9px] font-bold text-indigo-700 leading-tight">${data['Grade Level'] || ''}</p>
+                        <p class="text-[8px] font-semibold text-gray-600 truncate px-1">${data['Strand'] || ''}</p>
+                    </div>
+                </div>
+                <div class="bg-yellow-400 text-indigo-900 text-center py-1 font-bold text-[10px] tracking-widest uppercase mt-auto">
+                    Student
+                </div>
+            </div>
+            
+            <!-- ID BACK -->
+            <div class="id-card-print-target flex flex-col bg-white overflow-hidden text-gray-800" style="width: 2.125in; height: 3.375in; border: 1px solid #ccc; border-radius: 8px; position: relative; font-family: 'Inter', sans-serif;">
+                <div class="p-3 flex-1 flex flex-col">
+                    <h3 class="text-[9px] font-bold text-center text-indigo-700 mb-2 border-b pb-1">IN CASE OF EMERGENCY</h3>
+                    <div class="space-y-2 flex-1 mt-1">
+                        <div>
+                            <p class="text-[7px] text-gray-500 uppercase">Contact Person</p>
+                            <p class="text-[10px] font-bold leading-tight text-gray-800">${data['Emergency Name'] || 'N/A'}</p>
+                        </div>
+                        <div>
+                            <p class="text-[7px] text-gray-500 uppercase">Contact Number</p>
+                            <p class="text-[11px] font-mono font-bold leading-tight text-gray-800">${data['Emergency Contact'] || 'N/A'}</p>
+                        </div>
+                        <div>
+                            <p class="text-[7px] text-gray-500 uppercase">Address</p>
+                            <p class="text-[9px] leading-tight text-gray-800">${data['Barangay'] || ''}, ${data['Municipality'] || ''}</p>
+                        </div>
+                    </div>
+                    <div class="mt-auto text-center pt-2">
+                        <div class="border-b border-black mx-4 mb-1"></div>
+                        <p class="text-[8px] uppercase font-bold text-gray-900">Principal's Signature</p>
+                        <div class="mt-3 text-[6.5px] text-gray-500 text-center leading-tight">
+                            <p>This ID is non-transferable.</p>
+                            <p>If found, please return to ONHS.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            `;
+        }
+
+        function updateIdPreview() {
+            const htmlContent = generateIdHTML(currentStudentForId, currentIdPhotoSrc);
+            // Render on screen
+            document.getElementById('idPreviewContainer').innerHTML = htmlContent;
+            // Render in hidden print wrapper
+            document.getElementById('printableIdContainerWrapper').innerHTML = htmlContent;
+        }
+
+        // Listen for Photo Upload in ID Generator
+        document.getElementById('idPhotoInput').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    currentIdPhotoSrc = event.target.result;
+                    updateIdPreview();
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        // Trigger Browser Print
+        function printIdCard() {
+            document.body.classList.add('printing-id');
+            window.print();
+            
+            // Remove print state cleanly after dialog closes
+            setTimeout(() => {
+                document.body.classList.remove('printing-id');
+            }, 1000);
+        }
+
+        // ==========================================
+        //         DYNAMIC DROPDOWNS LOGIC
+        // ==========================================
+        function handleGradeChange() {
+            const grade = document.getElementById('gradeLevel').value;
+            const strandContainer = document.getElementById('strandContainer');
+            const dropdownClass = "w-full md:w-2/3 p-3.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-formprimary focus:border-formprimary outline-none transition bg-white text-gray-700 shadow-sm hover:border-gray-400";
+            
+            if (grade === 'Grade 11') {
+                strandContainer.innerHTML = `
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">Strand / Section <span class="text-red-500">*</span></label>
+                    <select name="entry.946668393" required class="${dropdownClass}">
+                        <option value="" disabled selected>Select your strand</option>
+                        <option value="STEM1">STEM1</option>
+                        <option value="ALS">ALS</option>
+                        <option value="STEM2">STEM2</option>
+                        <option value="ABM1">ABM1</option>
+                        <option value="ABM2">ABM2</option>
+                        <option value="HUMSS1">HUMSS1</option>
+                        <option value="HUMSS2">HUMSS2</option>
+                        <option value="HUMSS3">HUMSS3</option>
+                        <option value="HUMSS4">HUMSS4</option>
+                        <option value="HUMSS5">HUMSS5</option>
+                        <option value="ARTS &amp; DESIGN">ARTS &amp; DESIGN</option>
+                        <option value="SPORTS TRACK">SPORTS TRACK</option>
+                        <option value="TVL - ICT">TVL - ICT</option>
+                        <option value="TVL-BREAD &amp; PASTRY">TVL-BREAD &amp; PASTRY</option>
+                        <option value="TVL-EIM">TVL-EIM</option>
+                        <option value="TVL-FOOD PRO">TVL-FOOD PRO</option>
+                    </select>
+                `;
+            } else if (grade === 'Grade 12') {
+                strandContainer.innerHTML = `
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">Strand / Section <span class="text-red-500">*</span></label>
+                    <select name="entry.946668393" required class="${dropdownClass}">
+                        <option value="" disabled selected>Select your strand</option>
+                        <option value="ALS">ALS</option>
+                        <option value="STEM1">STEM1</option>
+                        <option value="STEM2">STEM2</option>
+                        <option value="STEM3">STEM3</option>
+                        <option value="ABM1">ABM1</option>
+                        <option value="ABM2">ABM2</option>
+                        <option value="HUMSS1">HUMSS1</option>
+                        <option value="HUMSS2">HUMSS2</option>
+                        <option value="HUMSS3">HUMSS3</option>
+                        <option value="HUMSS4">HUMSS4</option>
+                        <option value="HUMSS5">HUMSS5</option>
+                        <option value="SPORTS TRACK">SPORTS TRACK</option>
+                        <option value="TVL - ICT">TVL - ICT</option>
+                        <option value="TVL-FOOD PRO">TVL-FOOD PRO</option>
+                        <option value="TVL-EIM">TVL-EIM</option>
+                        <option value="ARTS &amp; DESIGN">ARTS &amp; DESIGN</option>
+                        <option value="TVL-BREAD &amp; PASTRY">TVL-BREAD &amp; PASTRY</option>
+                    </select>
+                `;
+            }
+        }
+
+        function handleMunicipalityChange() {
+            const municipality = document.getElementById('municipality').value;
+            const barangayContainer = document.getElementById('barangayContainer');
+            const dropdownClass = "w-full p-3.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-formprimary focus:border-formprimary outline-none transition bg-white text-gray-700 shadow-sm hover:border-gray-400";
+            
+            if (municipality === 'Alcantara') {
+                barangayContainer.innerHTML = `
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">Barangay <span class="text-red-500">*</span></label>
+                    <select name="barangay_entry_id_here" required class="${dropdownClass}">
+                        <option value="" disabled selected>Select Barangay</option>
+                        <option value="Bagsik">Bagsik</option>
+                        <option value="Bonlao">Bonlao</option>
+                        <option value="Calagonsao">Calagonsao</option>
+                        <option value="Camili">Camili</option>
+                        <option value="Camod-om">Camod-om</option>
+                        <option value="Gui-ob">Gui-ob</option>
+                        <option value="Lawan">Lawan</option>
+                        <option value="Madalag">Madalag</option>
+                        <option value="Poblacion">Poblacion</option>
+                        <option value="San Isidro">San Isidro</option>
+                        <option value="San Roque">San Roque</option>
+                        <option value="Tugdan">Tugdan</option>
+                    </select>
+                `;
+            } else if (municipality === 'Banton') {
+                barangayContainer.innerHTML = `
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">Barangay <span class="text-red-500">*</span></label>
+                    <select name="barangay_entry_id_here" required class="${dropdownClass}">
+                        <option value="" disabled selected>Select Barangay</option>
+                        <option value="Balogo">Balogo</option>
+                        <option value="Banice">Banice</option>
+                        <option value="Hambi-an">Hambi-an</option>
+                        <option value="Lagang">Lagang</option>
+                        <option value="Libtong">Libtong</option>
+                        <option value="Mainit">Mainit</option>
+                        <option value="Nabalay">Nabalay</option>
+                        <option value="Nasunogan">Nasunogan</option>
+                        <option value="Poblacion">Poblacion</option>
+                        <option value="Sibay">Sibay</option>
+                        <option value="Tan-ag">Tan-ag</option>
+                        <option value="Toctoc">Toctoc</option>
+                        <option value="Togbongan">Togbongan</option>
+                        <option value="Togong">Togong</option>
+                        <option value="Tumalum">Tumalum</option>
+                        <option value="Tungonan">Tungonan</option>
+                        <option value="Yabawon">Yabawon</option>
+                    </select>
+                `;
+            } else if (municipality === 'Cajidiocan') {
+                barangayContainer.innerHTML = `
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">Barangay <span class="text-red-500">*</span></label>
+                    <select name="barangay_entry_id_here" required class="${dropdownClass}">
+                        <option value="" disabled selected>Select Barangay</option>
+                        <option value="Alibagon">Alibagon</option>
+                        <option value="Cambajao">Cambajao</option>
+                        <option value="Cambalo">Cambalo</option>
+                        <option value="Cambijang">Cambijang</option>
+                        <option value="Cantagda">Cantagda</option>
+                        <option value="Danao">Danao</option>
+                        <option value="Gutivan">Gutivan</option>
+                        <option value="Lico">Lico</option>
+                        <option value="Lumbang Este">Lumbang Este</option>
+                        <option value="Lumbang Weste">Lumbang Weste</option>
+                        <option value="Marigondon">Marigondon</option>
+                        <option value="Poblacion">Poblacion</option>
+                        <option value="Sugod">Sugod</option>
+                        <option value="Taguilos">Taguilos</option>
+                    </select>
+                `;
+            } else if (municipality === 'Calatrava') {
+                barangayContainer.innerHTML = `
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">Barangay <span class="text-red-500">*</span></label>
+                    <select name="barangay_entry_id_here" required class="${dropdownClass}">
+                        <option value="" disabled selected>Select Barangay</option>
+                        <option value="Balogo">Balogo</option>
+                        <option value="Linao">Linao</option>
+                        <option value="Pagsangahan">Pagsangahan</option>
+                        <option value="Pangulo">Pangulo</option>
+                        <option value="Poblacion">Poblacion</option>
+                        <option value="San Roque">San Roque</option>
+                        <option value="Talisay">Talisay</option>
+                    </select>
+                `;
+            } else if (municipality === 'Ferrol') {
+                barangayContainer.innerHTML = `
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">Barangay <span class="text-red-500">*</span></label>
+                    <select name="barangay_entry_id_here" required class="${dropdownClass}">
+                        <option value="" disabled selected>Select Barangay</option>
+                        <option value="Agnonoc">Agnonoc</option>
+                        <option value="Bunsoran">Bunsoran</option>
+                        <option value="Claro M. Recto">Claro M. Recto</option>
+                        <option value="Hinaguman">Hinaguman</option>
+                        <option value="Poblacion">Poblacion</option>
+                        <option value="Tubigon">Tubigon</option>
+                    </select>
+                `;
+            } else if (municipality === 'Looc') {
+                barangayContainer.innerHTML = `
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">Barangay <span class="text-red-500">*</span></label>
+                    <select name="barangay_entry_id_here" required class="${dropdownClass}">
+                        <option value="" disabled selected>Select Barangay</option>
+                        <option value="Agojo">Agojo</option>
+                        <option value="Balatucan">Balatucan</option>
+                        <option value="Buenavista">Buenavista</option>
+                        <option value="Camandao">Camandao</option>
+                        <option value="Guinhayaan">Guinhayaan</option>
+                        <option value="Limon Norte">Limon Norte</option>
+                        <option value="Limon Sur">Limon Sur</option>
+                        <option value="Manhac">Manhac</option>
+                        <option value="Pili">Pili</option>
+                        <option value="Poblacion">Poblacion</option>
+                        <option value="Punta">Punta</option>
+                        <option value="Tuguis">Tuguis</option>
+                    </select>
+                `;
+            } else if (municipality === 'Magdiwang') {
+                barangayContainer.innerHTML = `
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">Barangay <span class="text-red-500">*</span></label>
+                    <select name="barangay_entry_id_here" required class="${dropdownClass}">
+                        <option value="" disabled selected>Select Barangay</option>
+                        <option value="Agsao">Agsao</option>
+                        <option value="Agutay">Agutay</option>
+                        <option value="Ambulong">Ambulong</option>
+                        <option value="Dulangan">Dulangan</option>
+                        <option value="Ipil">Ipil</option>
+                        <option value="Jao-asan">Jao-asan</option>
+                        <option value="Poblacion">Poblacion</option>
+                        <option value="Silum">Silum</option>
+                        <option value="Tampayan">Tampayan</option>
+                    </select>
+                `;
+            } else if (municipality === 'Odiongan') {
+                barangayContainer.innerHTML = `
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">Barangay <span class="text-red-500">*</span></label>
+                    <select name="barangay_entry_id_here" required class="${dropdownClass}">
+                        <option value="" disabled selected>Select Barangay</option>
+                        <option value="Amatong">Amatong</option>
+                        <option value="Anahao">Anahao</option>
+                        <option value="Bangon">Bangon</option>
+                        <option value="Batiano">Batiano</option>
+                        <option value="Budiong">Budiong</option>
+                        <option value="Canduyong">Canduyong</option>
+                        <option value="Dapawan">Dapawan</option>
+                        <option value="Gabawan">Gabawan</option>
+                        <option value="Libertad">Libertad</option>
+                        <option value="Ligaya">Ligaya</option>
+                        <option value="Liwanag">Liwanag</option>
+                        <option value="Malilico">Malilico</option>
+                        <option value="Mayha">Mayha</option>
+                        <option value="Panique">Panique</option>
+                        <option value="Pato-o">Pato-o</option>
+                        <option value="Poctoy">Poctoy</option>
+                        <option value="Progreso Este">Progreso Este</option>
+                        <option value="Progreso Weste">Progreso Weste</option>
+                        <option value="Rizal">Rizal</option>
+                        <option value="Tabing Dagat">Tabing Dagat</option>
+                        <option value="Tabobo-an">Tabobo-an</option>
+                        <option value="Tuburan">Tuburan</option>
+                        <option value="Tulay">Tulay</option>
+                        <option value="Tumingad">Tumingad</option>
+                    </select>
+                `;
+            } else if (municipality === 'Romblon (Capital)') {
+                barangayContainer.innerHTML = `
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">Barangay <span class="text-red-500">*</span></label>
+                    <select name="barangay_entry_id_here" required class="${dropdownClass}">
+                        <option value="" disabled selected>Select Barangay</option>
+                        <option value="Agbaluto">Agbaluto</option>
+                        <option value="Agbudia">Agbudia</option>
+                        <option value="Agnaga">Agnaga</option>
+                        <option value="Agnay">Agnay</option>
+                        <option value="Agnipa">Agnipa</option>
+                        <option value="Agpanabat">Agpanabat</option>
+                        <option value="Agtongo">Agtongo</option>
+                        <option value="Alad">Alad</option>
+                        <option value="Bagacay">Bagacay</option>
+                        <option value="Barangay I">Barangay I</option>
+                        <option value="Barangay II">Barangay II</option>
+                        <option value="Barangay III">Barangay III</option>
+                        <option value="Barangay IV">Barangay IV</option>
+                        <option value="Cajimos">Cajimos</option>
+                        <option value="Calabogo">Calabogo</option>
+                        <option value="Capaclan">Capaclan</option>
+                        <option value="Cobrador">Cobrador</option>
+                        <option value="Ginablan">Ginablan</option>
+                        <option value="Guimpingan">Guimpingan</option>
+                        <option value="Ilauran">Ilauran</option>
+                        <option value="Lamao">Lamao</option>
+                        <option value="Li-o">Li-o</option>
+                        <option value="Logbon">Logbon</option>
+                        <option value="Lonos">Lonos</option>
+                        <option value="Lunas">Lunas</option>
+                        <option value="Macalas">Macalas</option>
+                        <option value="Mapula">Mapula</option>
+                        <option value="Palje">Palje</option>
+                        <option value="Sablayan">Sablayan</option>
+                        <option value="Sawang">Sawang</option>
+                        <option value="Tambac">Tambac</option>
+                    </select>
+                `;
+            } else if (municipality === 'San Agustin') {
+                barangayContainer.innerHTML = `
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">Barangay <span class="text-red-500">*</span></label>
+                    <select name="barangay_entry_id_here" required class="${dropdownClass}">
+                        <option value="" disabled selected>Select Barangay</option>
+                        <option value="Bachawan">Bachawan</option>
+                        <option value="Binongahan">Binongahan</option>
+                        <option value="Binugusan">Binugusan</option>
+                        <option value="Buli">Buli</option>
+                        <option value="Cabolutan">Cabolutan</option>
+                        <option value="Cagbuaya">Cagbuaya</option>
+                        <option value="Camantaya">Camantaya</option>
+                        <option value="Carmen">Carmen</option>
+                        <option value="Cawayan">Cawayan</option>
+                        <option value="Doña Juana">Doña Juana</option>
+                        <option value="Dubduban">Dubduban</option>
+                        <option value="Lusong">Lusong</option>
+                        <option value="Mahabang Baybay">Mahabang Baybay</option>
+                        <option value="Poblacion">Poblacion</option>
+                        <option value="Sugod">Sugod</option>
+                    </select>
+                `;
+            } else if (municipality === 'San Andres') {
+                barangayContainer.innerHTML = `
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">Barangay <span class="text-red-500">*</span></label>
+                    <select name="barangay_entry_id_here" required class="${dropdownClass}">
+                        <option value="" disabled selected>Select Barangay</option>
+                        <option value="Agpudlos">Agpudlos</option>
+                        <option value="Calunacon">Calunacon</option>
+                        <option value="Doña Trinidad">Doña Trinidad</option>
+                        <option value="Juncarlo">Juncarlo</option>
+                        <option value="Linawan">Linawan</option>
+                        <option value="Mabini">Mabini</option>
+                        <option value="Marigondon Norte">Marigondon Norte</option>
+                        <option value="Marigondon Sur">Marigondon Sur</option>
+                        <option value="Matutuna">Matutuna</option>
+                        <option value="Pag-alad">Pag-alad</option>
+                        <option value="Poblacion">Poblacion</option>
+                        <option value="Tan-agan">Tan-agan</option>
+                        <option value="Victoria">Victoria</option>
+                    </select>
+                `;
+            } else if (municipality === 'San Fernando') {
+                barangayContainer.innerHTML = `
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">Barangay <span class="text-red-500">*</span></label>
+                    <select name="barangay_entry_id_here" required class="${dropdownClass}">
+                        <option value="" disabled selected>Select Barangay</option>
+                        <option value="Agtiwa">Agtiwa</option>
+                        <option value="Azarga">Azarga</option>
+                        <option value="Campalingo">Campalingo</option>
+                        <option value="Canjalon">Canjalon</option>
+                        <option value="España">España</option>
+                        <option value="Mabini">Mabini</option>
+                        <option value="Mabulo">Mabulo</option>
+                        <option value="Otod">Otod</option>
+                        <option value="Panangcalan">Panangcalan</option>
+                        <option value="Pili">Pili</option>
+                        <option value="Poblacion">Poblacion</option>
+                        <option value="Taclobo">Taclobo</option>
+                    </select>
+                `;
+            } else if (municipality === 'San Jose') {
+                barangayContainer.innerHTML = `
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">Barangay <span class="text-red-500">*</span></label>
+                    <select name="barangay_entry_id_here" required class="${dropdownClass}">
+                        <option value="" disabled selected>Select Barangay</option>
+                        <option value="Busay">Busay</option>
+                        <option value="Combot">Combot</option>
+                        <option value="Lanas">Lanas</option>
+                        <option value="Pinamihagan">Pinamihagan</option>
+                        <option value="Poblacion">Poblacion</option>
+                    </select>
+                `;
+            } else if (municipality === 'Santa Fe') {
+                barangayContainer.innerHTML = `
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">Barangay <span class="text-red-500">*</span></label>
+                    <select name="barangay_entry_id_here" required class="${dropdownClass}">
+                        <option value="" disabled selected>Select Barangay</option>
+                        <option value="Agmanic">Agmanic</option>
+                        <option value="Canyayo">Canyayo</option>
+                        <option value="Danao Norte">Danao Norte</option>
+                        <option value="Danao Sur">Danao Sur</option>
+                        <option value="Guinbirayan">Guinbirayan</option>
+                        <option value="Guintigbasan">Guintigbasan</option>
+                        <option value="Magsaysay">Magsaysay</option>
+                        <option value="Mat-i">Mat-i</option>
+                        <option value="Pandan">Pandan</option>
+                        <option value="Poblacion">Poblacion</option>
+                        <option value="Tabugon">Tabugon</option>
+                    </select>
+                `;
+            } else if (municipality === 'Santa Maria') {
+                barangayContainer.innerHTML = `
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">Barangay <span class="text-red-500">*</span></label>
+                    <select name="barangay_entry_id_here" required class="${dropdownClass}">
+                        <option value="" disabled selected>Select Barangay</option>
+                        <option value="Bonga">Bonga</option>
+                        <option value="Concepcion Norte">Concepcion Norte</option>
+                        <option value="Concepcion Sur">Concepcion Sur</option>
+                        <option value="Paroyhog">Paroyhog</option>
+                        <option value="San Isidro">San Isidro</option>
+                        <option value="Santo Niño">Santo Niño</option>
+                    </select>
+                `;
+            } else {
+                barangayContainer.innerHTML = `
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">Barangay <span class="text-red-500">*</span></label>
+                    <input type="text" name="barangay_entry_id_here" required placeholder="Enter Barangay" class="w-full p-3.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-formprimary focus:border-formprimary outline-none transition bg-white shadow-sm hover:border-gray-400">
+                `;
+            }
+        }
+    </script>
+</body>
+</html>
