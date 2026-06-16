@@ -801,6 +801,7 @@
         //         ADMIN DASHBOARD LOGIC
         // ==========================================
         let adminDataCache = [];
+        let autoRefreshInterval = null; // Variable to hold the timer
 
         // Listen for F12 to open Admin Dashboard
         document.addEventListener('keydown', function(event) {
@@ -815,19 +816,43 @@
             if (dashboard.classList.contains('hidden')) {
                 dashboard.classList.remove('hidden');
                 dashboard.classList.add('flex');
-                fetchAdminData(); // Auto fetch on open
+                
+                // Fetch immediately on open
+                fetchAdminData(); 
+                
+                // Start auto-refreshing every 5 seconds (5000 milliseconds)
+                if (!autoRefreshInterval) {
+                    autoRefreshInterval = setInterval(() => {
+                        // Only auto-refresh if the user is NOT actively typing in the search box
+                        // to prevent the table from resetting while they are searching.
+                        const searchInput = document.getElementById('adminSearchInput').value;
+                        if (searchInput === '') {
+                            fetchAdminData(true); // true = silent refresh (no loading screen)
+                        }
+                    }, 5000);
+                }
+
             } else {
                 dashboard.classList.add('hidden');
                 dashboard.classList.remove('flex');
+                
+                // Stop the auto-refresh timer when dashboard is closed to save resources
+                if (autoRefreshInterval) {
+                    clearInterval(autoRefreshInterval);
+                    autoRefreshInterval = null;
+                }
             }
         }
 
-        async function fetchAdminData() {
+        // Added 'isSilent' parameter to prevent flashing the loading screen every 5 seconds
+        async function fetchAdminData(isSilent = false) {
             const SCRIPT_URL = document.getElementById('registrationForm').action;
             const loading = document.getElementById('adminLoading');
             const refreshIcon = document.getElementById('adminRefreshIcon');
             
-            loading.classList.remove('hidden');
+            if (!isSilent) {
+                loading.classList.remove('hidden');
+            }
             refreshIcon.classList.add('fa-spin');
 
             try {
@@ -835,14 +860,28 @@
                 const response = await fetch(SCRIPT_URL);
                 const data = await response.json();
                 
-                adminDataCache = data; // store locally for search/edit
-                renderAdminTable(data);
+                // Only re-render if the data actually changed or if it's the initial load
+                if (JSON.stringify(data) !== JSON.stringify(adminDataCache) || !isSilent) {
+                    adminDataCache = data; 
+                    
+                    // Re-apply search filter if there is one active
+                    const query = document.getElementById('adminSearchInput').value;
+                    if (query) {
+                        filterAdminTable();
+                    } else {
+                        renderAdminTable(data);
+                    }
+                }
                 
             } catch (error) {
                 console.error("Error fetching data:", error);
-                alert("Failed to fetch database records. Check your internet or Web App URL permissions.");
+                if (!isSilent) {
+                    alert("Failed to fetch database records. Check your internet or Web App URL permissions.");
+                }
             } finally {
-                loading.classList.add('hidden');
+                if (!isSilent) {
+                    loading.classList.add('hidden');
+                }
                 refreshIcon.classList.remove('fa-spin');
             }
         }
